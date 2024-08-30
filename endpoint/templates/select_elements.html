@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Elements</title>
+</head>
+<body>
+    <h1>Select Elements</h1>
+    <form id="elementsForm" action="/select-elements/" method="post">
+        <div id="checkboxContainer"></div>
+        <button type="submit">Submit</button>
+    </form>
+    <script>
+        // Pobierz elementy z backendu
+        fetch('/elements/')
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('checkboxContainer');
+                data.elements_full.forEach(element => {
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.name = 'selected_elements';
+                    checkbox.value = element;
+                    checkbox.id = element;
+
+                    const label = document.createElement('label');
+                    label.htmlFor = element;
+                    label.appendChild(document.createTextNode(element));
+
+                    container.appendChild(checkbox);
+                    container.appendChild(label);
+                    container.appendChild(document.createElement('br'));
+                });
+            });
+    </script>
+</body>
+</html>
