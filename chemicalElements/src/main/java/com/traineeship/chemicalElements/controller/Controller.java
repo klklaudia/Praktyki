@@ -1,33 +1,27 @@
 package com.traineeship.chemicalElements.controller;
 
 import com.traineeship.chemicalElements.entity.Element;
+import com.traineeship.chemicalElements.service.ElementService;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@RequestMapping("api/elements")
 public class Controller {
 
-    private final List<Element> elements = new ArrayList<>();
+    private final ElementService elementService;
 
-    public Controller() {
-        initializeElements();
+    public Controller(ElementService elementService) {
+        this.elementService = elementService;
     }
 
-    private void initializeElements() {
-        elements.addAll(List.of(
-                new Element("Ca", 2.4, 3.0),
-                new Element("K", 6.66, 0.1),
-                new Element("K", 9.76, 1.00)));
+    @GetMapping
+    public List<Element> getElements(@RequestParam(required = false) String element) {
+        return elementService.getElements(element);
     }
-
-
-
-    @GetMapping("/elements")
-    public List<Element> getAllElements() {
-        return elements;
-    }
-
 }
+
