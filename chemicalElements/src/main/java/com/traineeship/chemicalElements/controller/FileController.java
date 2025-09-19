@@ -10,8 +10,9 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 public class FileController {
 
-    @PostMapping(path = "/upload-file")
+    @PostMapping(path = "/upload-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public void uploadFile(MultipartFile file) {
+
     }
 
 }
