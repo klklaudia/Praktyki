@@ -15,6 +15,7 @@ public class ElementServiceImplementation implements ElementService {
         initializeElements();
     }
 
+    // hard-coded values for testing
     private void initializeElements() {
         elements.addAll(List.of(
                 new Element("Ca", 2.4, 3.0),
@@ -22,6 +23,7 @@ public class ElementServiceImplementation implements ElementService {
                 new Element("K", 9.76, 1.00)));
     }
 
+    // returning all rows of chosen chemical element
     public List<Element> getElements(String element) {
         if (element == null)
             return elements;

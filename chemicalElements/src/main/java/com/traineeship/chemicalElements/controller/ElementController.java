@@ -11,11 +11,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/elements")
-public class Controller {
+public class ElementController {
 
     private final ElementService elementService;
 
-    public Controller(ElementService elementService) {
+    public ElementController(ElementService elementService) {
         this.elementService = elementService;
     }
 

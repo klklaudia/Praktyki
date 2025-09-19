@@ -1,5 +1,8 @@
 package com.traineeship.chemicalElements.entity;
 
+// test class for a row
+// a row contains element name and two measurements
+
 public class Element {
 
     private String name;
