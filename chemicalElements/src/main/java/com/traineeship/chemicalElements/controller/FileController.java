@@ -1,6 +1,7 @@
 package com.traineeship.chemicalElements.controller;
 
 import com.traineeship.chemicalElements.entity.FileInfo;
+import com.traineeship.chemicalElements.service.FileService;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -18,17 +19,13 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 @RestController
 public class FileController {
 
+    private FileService fileService;
 
-    private FileInfo fileInfo;
+    @Autowired
+    public FileController(FileService fileService) {
+        this.fileService = fileService;
+    }
 
-//    @Autowired
-//    public FileController(FileInfo fileInfo) {
-//        this.fileInfo = fileInfo;
-//    }
-//
-//    public FileController() {}
-
-    
     // doesn't work without MediaType.MULTIPART_FORM_DATA_VALUE
     // APPLICATION_XML
     // TEXT_XML
@@ -36,38 +33,14 @@ public class FileController {
     @PostMapping(path = "/upload-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
     public FileInfo uploadFile(@RequestParam("file") MultipartFile uploadedFile) throws IOException {
 
-        FileInfo fileInfo = new FileInfo();
+        // just files?
+        return fileService.uploadFile(uploadedFile);
 
-        fileInfo.setFileName((uploadedFile.getOriginalFilename()));
-        fileInfo.setContentType(uploadedFile.getContentType());
-        fileInfo.setFileLength(uploadedFile.getSize());
-        fileInfo.setFileEmpty(uploadedFile.isEmpty());
-        fileInfo.setReadable(uploadedFile.getResource().isReadable());
-        fileInfo.setFileData(uploadedFile.getBytes());
-
-        this.fileInfo = fileInfo;
-
-        return this.fileInfo;
     }
-
 
     @GetMapping(path = "/get-content")
     public String readFile() {
-        byte[] fileData = fileInfo.getFileData();
-        return new String(fileData, StandardCharsets.UTF_8);
+        return fileService.readFile();
     }
-
-//    @GetMapping("/read-file")
-//    public void readFile() throws IOException {
-//        LineIterator it = FileUtils.lineIterator(file2, "UTF-8");
-//        try {
-//            while (it.hasNext()) {
-//                String line = it.nextLine();
-//                System.out.println(line);
-//            }
-//        } finally {
-//            LineIterator.closeQuietly(it);
-//        }
-//    }
 
 }
