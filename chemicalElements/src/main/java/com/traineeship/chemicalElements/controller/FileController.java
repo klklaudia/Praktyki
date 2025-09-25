@@ -1,6 +1,7 @@
 package com.traineeship.chemicalElements.controller;
 
 import com.opencsv.exceptions.CsvException;
+import com.traineeship.chemicalElements.entity.Element;
 import com.traineeship.chemicalElements.entity.FileInfo;
 import com.traineeship.chemicalElements.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +11,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-
-// controller for an upload
 
 @RestController
 public class FileController {
@@ -24,18 +23,24 @@ public class FileController {
     }
 
     // doesn't work without MediaType.MULTIPART_FORM_DATA_VALUE
-    // APPLICATION_XML
-    // TEXT_XML
-
-    @PostMapping(path = "/upload-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
+    // uploading file
+    // returns file information as json
+    @PostMapping(path = "/upload-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public FileInfo uploadFile(@RequestParam("file") MultipartFile uploadedFile) throws IOException, CsvException {
         return fileService.uploadFile(uploadedFile);
     }
 
-    // juz for testing -> data from db
+    // just for testing -> data from and to db
+    // getting data from variable
     @GetMapping(path = "/get-content")
-    public List<String[]> getContent() {
+    public List<Element> getContent() {
         return fileService.getContent();
+    }
+
+    // filtered elements based on user input
+    @GetMapping(path = "/get-content/{element}")
+    public List<Element> getFilteredMeasurements(@PathVariable String element) {
+        return fileService.getFilteredMeasurements(element);
     }
 
 }
