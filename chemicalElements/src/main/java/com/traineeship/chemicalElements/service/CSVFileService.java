@@ -10,7 +10,6 @@ import com.traineeship.chemicalElements.entity.Element;
 import com.traineeship.chemicalElements.entity.FileInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -21,29 +20,13 @@ import java.util.Arrays;
 import java.util.List;
 
 @Service
-public class FileServiceImplementation implements FileService {
-
-    private final FileInfo fileInfo;
+public class CSVFileService extends FileService {
 
     @Autowired
-    public FileServiceImplementation(FileInfo fileInfo) {
+    public CSVFileService(FileInfo fileInfo) {
         this.fileInfo = fileInfo;
     }
 
-    public FileInfo uploadFile(MultipartFile uploadedFile) throws IOException, CsvException {
-
-        fileInfo.setFileName((uploadedFile.getOriginalFilename()));
-        fileInfo.setContentType(uploadedFile.getContentType());
-        fileInfo.setFileEmpty(uploadedFile.isEmpty());
-        fileInfo.setReadable(uploadedFile.getResource().isReadable());
-        fileInfo.setContent(readFile(uploadedFile)); // too much data to display
-        fileInfo.setHeaders(readHeader(uploadedFile));
-        fileInfo.setFileExtension();
-        return fileInfo; // add return body
-    }
-
-    // set separator
-    // private method to create CSV reader
     private CSVReader createCSVReader(MultipartFile file, char separator, int skippedLines) throws IOException {
 
         Reader reader = new InputStreamReader(file.getInputStream());
@@ -53,14 +36,15 @@ public class FileServiceImplementation implements FileService {
                 .withIgnoreQuotations(true)
                 .build();
 
+        // closing stream
         return new CSVReaderBuilder(reader)
                 .withSkipLines(skippedLines)
                 .withCSVParser(parser)
                 .build();
     }
 
-    // separate reading for header due to its format
-    private String[] readHeader(MultipartFile file) throws IOException, CsvValidationException {
+    @Override
+    protected String[] readHeader(MultipartFile file) throws IOException, CsvValidationException {
 
         CSVReader csvReader = createCSVReader(file, ';', 0);
 
@@ -70,7 +54,8 @@ public class FileServiceImplementation implements FileService {
     }
 
     // reading the content
-    private List<Element> readFile(MultipartFile file) throws IOException, CsvException {
+    @Override
+    protected List<Element> readFile(MultipartFile file) throws IOException, CsvValidationException {
 
         CSVReader csvReader = createCSVReader(file, ';', 1);
 
@@ -90,17 +75,18 @@ public class FileServiceImplementation implements FileService {
         return res;
     }
 
-    // -> change to db
-    public List<Element> getContent() {
-        return fileInfo.getContent();
+    @Override
+    public FileInfo uploadFile(MultipartFile uploadedFile) throws IOException, CsvException {
+
+        fileInfo.setFileName((uploadedFile.getOriginalFilename()));
+        fileInfo.setContentType(uploadedFile.getContentType());
+        fileInfo.setFileEmpty(uploadedFile.isEmpty());
+        fileInfo.setReadable(uploadedFile.getResource().isReadable());
+        fileInfo.setFileExtension();
+
+        fileInfo.setContent(readFile(uploadedFile)); // too much data to display
+        fileInfo.setHeaders(readHeader(uploadedFile));
+
+        return fileInfo; // add return body
     }
-
-    public List<Element> getFilteredMeasurements(@PathVariable String elementName) {
-
-        return fileInfo.getContent().stream()
-                // chemical element name must case-sensitive (CO =/= Co) (
-                .filter(element -> element.getName().equals(elementName))
-                .toList();
-    }
-
 }
